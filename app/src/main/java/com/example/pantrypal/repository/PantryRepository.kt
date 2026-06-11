@@ -14,6 +14,12 @@ class PantryRepository(
         pantryDao.insert(item)
     }
 
+    suspend fun delete(
+        item: PantryItem
+    ) {
+        pantryDao.delete(item)
+    }
+
     fun getItems(
         userId: Int
     ): Flow<List<PantryItem>> {

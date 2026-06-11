@@ -1,17 +1,28 @@
 package com.example.pantrypal.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.*
-import com.example.pantrypal.ui.login.LoginScreen
-import com.example.pantrypal.ui.register.RegisterScreen
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.*
+
 import com.example.pantrypal.data.database.PantryDatabase
+import com.example.pantrypal.data.entity.PantryItem
 import com.example.pantrypal.data.entity.User
+
+import com.example.pantrypal.repository.PantryRepository
 import com.example.pantrypal.repository.UserRepository
+
+import com.example.pantrypal.ui.additem.AddItemScreen
+import com.example.pantrypal.ui.login.LoginScreen
+import com.example.pantrypal.ui.pantry.PantryScreen
+import com.example.pantrypal.ui.register.RegisterScreen
+
+import com.example.pantrypal.viewmodel.PantryViewModel
+import com.example.pantrypal.viewmodel.PantryViewModelFactory
 import com.example.pantrypal.viewmodel.UserViewModel
 import com.example.pantrypal.viewmodel.UserViewModelFactory
-import com.example.pantrypal.ui.pantry.PantryScreen
 
 @Composable
 fun NavGraph() {
@@ -20,16 +31,31 @@ fun NavGraph() {
 
     val context = LocalContext.current
 
-    val database =
-        PantryDatabase.getDatabase(context)
+    val database = PantryDatabase.getDatabase(context)
 
-    val repository =
+    val userRepository =
         UserRepository(database.userDao())
 
-    val viewModel: UserViewModel =
+    val pantryRepository =
+        PantryRepository(database.pantryDao())
+
+    val userViewModel: UserViewModel =
         viewModel(
-            factory = UserViewModelFactory(repository)
+            factory =
+                UserViewModelFactory(userRepository)
         )
+
+    val pantryViewModel: PantryViewModel =
+        viewModel(
+            factory =
+                PantryViewModelFactory(
+                    pantryRepository
+                )
+        )
+
+    val pantryItems by
+    pantryViewModel.items
+        .collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -48,14 +74,14 @@ fun NavGraph() {
 
                 onLoginClick = { email, password ->
 
-                    viewModel.login(
+                    userViewModel.login(
                         email,
                         password
                     )
                 }
             )
 
-            if (viewModel.loginSuccess.value) {
+            if (userViewModel.loginSuccess.value) {
 
                 navController.navigate(
                     Screen.Pantry.route
@@ -66,9 +92,12 @@ fun NavGraph() {
         composable(Screen.Register.route) {
 
             RegisterScreen(
-                onRegisterClick = { email, password, pin ->
+                onRegisterClick = {
+                        email,
+                        password,
+                        pin ->
 
-                    viewModel.register(
+                    userViewModel.register(
                         User(
                             email = email,
                             password = password,
@@ -81,10 +110,47 @@ fun NavGraph() {
             )
         }
 
-        composable(
-            Screen.Pantry.route
-        ) {
-            PantryScreen()
+        composable(Screen.Pantry.route) {
+
+            PantryScreen(
+                items = pantryItems,
+
+                onAddClick = {
+                    navController.navigate(
+                        Screen.AddItem.route
+                    )
+                },
+
+                onDeleteClick = { item ->
+                    pantryViewModel.deleteItem(item)
+                }
+            )
+        }
+
+        composable(Screen.AddItem.route) {
+
+            AddItemScreen(
+
+                onAddItem = {
+                        name,
+                        quantity,
+                        category ->
+
+                    pantryViewModel.addItem(
+
+                        PantryItem(
+                            userId = 1,
+                            itemName = name,
+                            quantity = quantity,
+                            category = category,
+                            expirationDate =
+                                System.currentTimeMillis()
+                        )
+                    )
+
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

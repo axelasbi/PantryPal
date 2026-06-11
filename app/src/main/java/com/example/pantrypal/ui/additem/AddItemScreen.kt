@@ -34,43 +34,30 @@ fun AddItemScreen(
 
         OutlinedTextField(
             value = name,
-            onValueChange = {
-                name = it
-            },
-            label = {
-                Text("Item Name")
-            }
+            onValueChange = { name = it },
+            label = { Text("Item Name") }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = quantity,
-            onValueChange = {
-                quantity = it
-            },
-            label = {
-                Text("Quantity")
-            }
+            onValueChange = { quantity = it },
+            label = { Text("Quantity") }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = category,
-            onValueChange = {
-                category = it
-            },
-            label = {
-                Text("Category")
-            }
+            onValueChange = { category = it },
+            label = { Text("Category") }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-
                 onAddItem(
                     name,
                     quantity.toIntOrNull() ?: 0,

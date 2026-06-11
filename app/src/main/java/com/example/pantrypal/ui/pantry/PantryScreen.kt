@@ -12,7 +12,8 @@ import com.example.pantrypal.data.entity.PantryItem
 @Composable
 fun PantryScreen(
     items: List<PantryItem>,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onDeleteClick: (PantryItem) -> Unit
 ) {
 
     Column(
@@ -59,6 +60,18 @@ fun PantryScreen(
                         Text(
                             item.category
                         )
+
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
+
+                        Button(
+                            onClick = {
+                                onDeleteClick(item)
+                            }
+                        ) {
+                            Text("Delete")
+                        }
                     }
                 }
             }

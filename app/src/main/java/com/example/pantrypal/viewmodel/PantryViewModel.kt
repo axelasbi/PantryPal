@@ -14,7 +14,7 @@ class PantryViewModel(
 
     val items =
         repository
-            .getItems(1) // temporary userId
+            .getItems(1)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(),
@@ -26,6 +26,14 @@ class PantryViewModel(
     ) {
         viewModelScope.launch {
             repository.insert(item)
+        }
+    }
+
+    fun deleteItem(
+        item: PantryItem
+    ) {
+        viewModelScope.launch {
+            repository.delete(item)
         }
     }
 }
