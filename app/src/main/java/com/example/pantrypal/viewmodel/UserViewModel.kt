@@ -13,6 +13,9 @@ class UserViewModel(
 
     val loginSuccess = mutableStateOf(false)
 
+    val currentUser =
+        mutableStateOf<User?>(null)
+
     fun register(user: User) {
         viewModelScope.launch {
             repository.register(user)
@@ -30,6 +33,8 @@ class UserViewModel(
                     email,
                     password
                 )
+
+            currentUser.value = user
 
             loginSuccess.value =
                 user != null

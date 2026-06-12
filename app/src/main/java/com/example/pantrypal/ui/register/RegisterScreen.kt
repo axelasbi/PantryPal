@@ -11,13 +11,11 @@ fun RegisterScreen(
     onRegisterClick: (
         email: String,
         password: String,
-        pin: String
     ) -> Unit
 ) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var pin by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -47,22 +45,13 @@ fun RegisterScreen(
             label = { Text("Password") }
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = pin,
-            onValueChange = { pin = it },
-            label = { Text("6 Digit PIN") }
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
                 onRegisterClick(
                     email,
-                    password,
-                    pin
+                    password
                 )
             }
         ) {

@@ -10,7 +10,9 @@ sealed class Screen(
 
     object Pantry : Screen("pantry")
 
-    object Dashboard : Screen("dashboard")
-
     object AddItem : Screen("addItem")
+
+    object EditItem : Screen("editItem")
+
+    object Dashboard : Screen("dashboard")
 }

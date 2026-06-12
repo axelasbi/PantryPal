@@ -14,6 +14,12 @@ class PantryRepository(
         pantryDao.insert(item)
     }
 
+    suspend fun update(
+        item: PantryItem
+    ) {
+        pantryDao.update(item)
+    }
+
     suspend fun delete(
         item: PantryItem
     ) {

@@ -7,19 +7,20 @@ import com.example.pantrypal.repository.PantryRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class PantryViewModel(
     private val repository: PantryRepository
 ) : ViewModel() {
 
+    private var currentUserId = 0
+
+    private val _items =
+        MutableStateFlow<List<PantryItem>>(emptyList())
+
     val items =
-        repository
-            .getItems(1)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(),
-                emptyList()
-            )
+        _items.asStateFlow()
 
     fun addItem(
         item: PantryItem
@@ -29,11 +30,34 @@ class PantryViewModel(
         }
     }
 
+    fun updateItem(
+        item: PantryItem
+    ) {
+        viewModelScope.launch {
+            repository.update(item)
+        }
+    }
+
     fun deleteItem(
         item: PantryItem
     ) {
         viewModelScope.launch {
             repository.delete(item)
+        }
+    }
+
+    fun loadItems(
+        userId: Int
+    ) {
+
+        viewModelScope.launch {
+
+            repository
+                .getItems(userId)
+                .collect {
+
+                    _items.value = it
+                }
         }
     }
 }
