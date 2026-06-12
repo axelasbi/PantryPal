@@ -2,15 +2,12 @@ package com.example.pantrypal.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 import androidx.compose.runtime.*
 
-import com.example.pantrypal.data.database.PantryDatabase
 import com.example.pantrypal.data.entity.PantryItem
-import com.example.pantrypal.data.entity.User
 
 import com.example.pantrypal.repository.PantryRepository
 import com.example.pantrypal.repository.UserRepository
@@ -32,15 +29,9 @@ fun NavGraph() {
 
     val navController = rememberNavController()
 
-    val context = LocalContext.current
+    val userRepository = remember { UserRepository() }
 
-    val database = PantryDatabase.getDatabase(context)
-
-    val userRepository =
-        UserRepository(database.userDao())
-
-    val pantryRepository =
-        PantryRepository(database.pantryDao())
+    val pantryRepository = remember { PantryRepository() }
 
     val userViewModel: UserViewModel =
         viewModel(
@@ -117,6 +108,8 @@ fun NavGraph() {
 
             LoginScreen(
 
+                errorMessage = userViewModel.errorMessage.value,
+
                 onRegisterClick = {
                     navController.navigate(
                         Screen.Register.route
@@ -132,38 +125,52 @@ fun NavGraph() {
                 }
             )
 
-            if (userViewModel.loginSuccess.value) {
+            val uid = userViewModel.currentUserId.value
 
-                userViewModel.currentUser.value?.let {
+            LaunchedEffect(
+                userViewModel.loginSuccess.value,
+                uid
+            ) {
 
-                    pantryViewModel.loadItems(
-                        it.id
-                    )
+                if (userViewModel.loginSuccess.value && uid != null) {
+
+                    pantryViewModel.loadItems(uid)
+
+                    userViewModel.resetLoginSuccess()
+
+                    navController.navigate(Screen.Pantry.route) {
+                        popUpTo(Screen.Login.route) {
+                            inclusive = true
+                        }
+                    }
                 }
-
-                navController.navigate(
-                    Screen.Pantry.route
-                )
             }
         }
 
         composable(Screen.Register.route) {
 
             RegisterScreen(
-                onRegisterClick = {
-                        email,
-                        password ->
+
+                errorMessage = userViewModel.errorMessage.value,
+
+                onRegisterClick = { email, password ->
 
                     userViewModel.register(
-                        User(
-                            email = email,
-                            password = password
-                        )
+                        email,
+                        password
                     )
+                }
+            )
+
+            LaunchedEffect(userViewModel.registerSuccess.value) {
+
+                if (userViewModel.registerSuccess.value) {
+
+                    userViewModel.resetRegisterSuccess()
 
                     navController.popBackStack()
                 }
-            )
+            }
         }
 
         composable(Screen.Pantry.route) {
@@ -208,14 +215,14 @@ fun NavGraph() {
                         category,
                         expirationDate ->
 
-                    val currentUser =
-                        userViewModel.currentUser.value
+                    val uid =
+                        userViewModel.currentUserId.value
                             ?: return@AddItemScreen
 
                     pantryViewModel.addItem(
 
                         PantryItem(
-                            userId = currentUser.id,
+                            userId = uid,
                             itemName = name,
                             quantity = quantity,
                             category = category,

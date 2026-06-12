@@ -2,10 +2,7 @@ package com.example.pantrypal.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.pantrypal.data.entity.User
 import com.example.pantrypal.repository.UserRepository
-import kotlinx.coroutines.launch
 
 class UserViewModel(
     private val repository: UserRepository
@@ -13,12 +10,29 @@ class UserViewModel(
 
     val loginSuccess = mutableStateOf(false)
 
-    val currentUser =
-        mutableStateOf<User?>(null)
+    val registerSuccess = mutableStateOf(false)
 
-    fun register(user: User) {
-        viewModelScope.launch {
-            repository.register(user)
+    /** Firebase UID of the signed-in user, or null. */
+    val currentUserId =
+        mutableStateOf(repository.currentUserId)
+
+    /** Last auth error to surface in the UI, or null. */
+    val errorMessage =
+        mutableStateOf<String?>(null)
+
+    fun register(
+        email: String,
+        password: String
+    ) {
+        errorMessage.value = null
+
+        repository.register(email, password) { success, error ->
+            if (success) {
+                registerSuccess.value = true
+            } else {
+                errorMessage.value =
+                    error ?: "Registration failed"
+            }
         }
     }
 
@@ -26,18 +40,31 @@ class UserViewModel(
         email: String,
         password: String
     ) {
-        viewModelScope.launch {
+        errorMessage.value = null
 
-            val user =
-                repository.login(
-                    email,
-                    password
-                )
-
-            currentUser.value = user
-
-            loginSuccess.value =
-                user != null
+        repository.login(email, password) { success, error ->
+            if (success) {
+                currentUserId.value = repository.currentUserId
+                loginSuccess.value = true
+            } else {
+                loginSuccess.value = false
+                errorMessage.value =
+                    error ?: "Login failed"
+            }
         }
+    }
+
+    fun logout() {
+        repository.logout()
+        currentUserId.value = null
+        loginSuccess.value = false
+    }
+
+    fun resetRegisterSuccess() {
+        registerSuccess.value = false
+    }
+
+    fun resetLoginSuccess() {
+        loginSuccess.value = false
     }
 }

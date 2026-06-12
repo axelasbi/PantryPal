@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "440365345519",
+    "firebase_url": "https://applicationaxel-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "applicationaxel",
+    "storage_bucket": "applicationaxel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440365345519:android:4cc105e02ef778266d091a",
+        "android_client_info": {
+          "package_name": "com.example.demoapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVAUVEALf7g-xcdJ0mFvQbD72MLqXe4wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440365345519:android:493411ca0fb6ffba6d091a",
+        "android_client_info": {
+          "package_name": "com.example.firebaseapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVAUVEALf7g-xcdJ0mFvQbD72MLqXe4wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440365345519:android:a7e59560a122c6776d091a",
+        "android_client_info": {
+          "package_name": "com.example.pantrypal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVAUVEALf7g-xcdJ0mFvQbD72MLqXe4wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

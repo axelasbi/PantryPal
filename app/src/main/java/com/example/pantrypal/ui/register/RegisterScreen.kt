@@ -11,7 +11,8 @@ fun RegisterScreen(
     onRegisterClick: (
         email: String,
         password: String,
-    ) -> Unit
+    ) -> Unit,
+    errorMessage: String? = null
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -46,6 +47,14 @@ fun RegisterScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         Button(
             onClick = {
